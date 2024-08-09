@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import { Node } from '@tiptap/core';
@@ -7,7 +7,8 @@ import Image from '@tiptap/extension-image';
 import { GripVertical } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Bold, Italic, List, ListOrdered, Image as ImageIcon, Code, Quote } from 'lucide-react';
+import { Bold, Italic, List, ListOrdered, Image as ImageIcon, Code, Quote, FileDown } from 'lucide-react';
+import { toPng } from 'html-to-image';
 
 const BlockHandle = Node.create({
   name: 'blockHandle',
@@ -38,9 +39,9 @@ const CustomParagraph = Node.create({
 
 const Index = () => {
   const [title, setTitle] = useState('Untitled');
-
   const [showMenu, setShowMenu] = useState(false);
   const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
+  const editorRef = useRef(null);
 
   const editor = useEditor({
     extensions: [
@@ -185,6 +186,21 @@ const Index = () => {
     }
   };
 
+  const exportAsPDF = useCallback(() => {
+    if (editorRef.current) {
+      toPng(editorRef.current, { quality: 0.95 })
+        .then((dataUrl) => {
+          const link = document.createElement('a');
+          link.download = `${title}.png`;
+          link.href = dataUrl;
+          link.click();
+        })
+        .catch((err) => {
+          console.error('oops, something went wrong!', err);
+        });
+    }
+  }, [title]);
+
   return (
     <div className="min-h-screen bg-gray-100 p-8 flex flex-col">
       <div className="max-w-4xl w-full mx-auto bg-white rounded-lg shadow-lg p-6 flex flex-col flex-grow">
@@ -228,12 +244,21 @@ const Index = () => {
             <ImageIcon className="h-4 w-4" />
           </Button>
         </div>
-        <div className="relative border rounded-md flex-grow flex flex-col overflow-hidden">
+        <div className="relative border rounded-md flex-grow flex flex-col overflow-hidden" ref={editorRef}>
           <EditorContent
             editor={editor}
             className="w-full flex-grow overflow-y-auto p-4"
             onPaste={handlePaste}
           />
+          <Button
+            variant="outline"
+            size="sm"
+            className="absolute bottom-4 right-4"
+            onClick={exportAsPDF}
+          >
+            <FileDown className="h-4 w-4 mr-2" />
+            Export as PDF
+          </Button>
           {showMenu && (
             <div
               className="absolute bg-white shadow-lg rounded-lg p-2 z-10 border border-gray-200"
