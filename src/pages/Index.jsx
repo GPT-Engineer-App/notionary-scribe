@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
+import Placeholder from '@tiptap/extension-placeholder';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Bold, Italic, List, ListOrdered } from 'lucide-react';
@@ -10,9 +11,31 @@ const Index = () => {
 
   const editor = useEditor({
     extensions: [
-      StarterKit,
+      StarterKit.configure({
+        heading: {
+          levels: [1, 2, 3],
+        },
+      }),
+      Placeholder.configure({
+        placeholder: ({ node }) => {
+          if (node.type.name === 'heading') {
+            return 'Heading'
+          }
+          return 'Press "/" for commands, or start typing...'
+        },
+      }),
     ],
     content: '',
+    editorProps: {
+      attributes: {
+        class: 'prose prose-sm sm:prose lg:prose-lg xl:prose-2xl focus:outline-none',
+      },
+    },
+    onUpdate: ({ editor }) => {
+      const json = editor.getJSON()
+      // You can save the content to local storage or send it to a server here
+      console.log(json)
+    },
   });
 
   const handleFormat = (command) => {
@@ -62,7 +85,7 @@ const Index = () => {
         </div>
         <EditorContent
           editor={editor}
-          className="w-full min-h-[300px] p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full min-h-[300px] p-2 focus:outline-none"
         />
       </div>
     </div>
