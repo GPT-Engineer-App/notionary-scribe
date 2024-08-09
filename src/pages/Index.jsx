@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
+import Image from '@tiptap/extension-image';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Bold, Italic, List, ListOrdered } from 'lucide-react';
+import { Bold, Italic, List, ListOrdered, Image as ImageIcon } from 'lucide-react';
 
 const Index = () => {
   const [title, setTitle] = useState('Untitled');
@@ -24,6 +25,7 @@ const Index = () => {
           return 'Press "/" for commands, or start typing...'
         },
       }),
+      Image,
     ],
     content: '',
     editorProps: {
@@ -37,6 +39,31 @@ const Index = () => {
       console.log(json)
     },
   });
+
+  const addImage = useCallback(() => {
+    const url = window.prompt('Enter the URL of the image:')
+    if (url) {
+      editor.chain().focus().setImage({ src: url }).run()
+    }
+  }, [editor]);
+
+  const handlePaste = useCallback((event) => {
+    const items = event.clipboardData?.items;
+    if (items) {
+      for (let i = 0; i < items.length; i++) {
+        if (items[i].type.indexOf('image') !== -1) {
+          event.preventDefault();
+          const blob = items[i].getAsFile();
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            editor.chain().focus().setImage({ src: e.target.result }).run();
+          };
+          reader.readAsDataURL(blob);
+          break;
+        }
+      }
+    }
+  }, [editor]);
 
   const handleFormat = (command) => {
     if (editor) {
@@ -82,10 +109,14 @@ const Index = () => {
           <Button variant="outline" size="icon" onClick={() => handleFormat('orderedList')}>
             <ListOrdered className="h-4 w-4" />
           </Button>
+          <Button variant="outline" size="icon" onClick={addImage}>
+            <ImageIcon className="h-4 w-4" />
+          </Button>
         </div>
         <EditorContent
           editor={editor}
           className="w-full min-h-[300px] p-2 focus:outline-none"
+          onPaste={handlePaste}
         />
       </div>
     </div>
