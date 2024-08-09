@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Bold, Italic, List, ListOrdered } from 'lucide-react';
 
 const Index = () => {
@@ -36,14 +35,12 @@ const Index = () => {
             <ListOrdered className="h-4 w-4" />
           </Button>
         </div>
-        <Textarea
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
+        <div
           className="w-full min-h-[300px] p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="Start typing here..."
           contentEditable
           onInput={(e) => setContent(e.target.innerHTML)}
           dangerouslySetInnerHTML={{ __html: content }}
+          placeholder="Start typing here..."
         />
       </div>
     </div>
