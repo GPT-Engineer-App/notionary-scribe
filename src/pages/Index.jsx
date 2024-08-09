@@ -1,8 +1,10 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
+import { Node } from '@tiptap/core';
 import Placeholder from '@tiptap/extension-placeholder';
 import Image from '@tiptap/extension-image';
+import { GripVertical } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Bold, Italic, List, ListOrdered, Image as ImageIcon, Code, Quote } from 'lucide-react';
@@ -19,6 +21,7 @@ const Index = () => {
         heading: {
           levels: [1, 2, 3],
         },
+        paragraph: false,
       }),
       Placeholder.configure({
         placeholder: ({ node }) => {
@@ -29,6 +32,8 @@ const Index = () => {
         },
       }),
       Image,
+      BlockHandle,
+      CustomParagraph,
     ],
     content: '',
     editorProps: {
@@ -40,6 +45,33 @@ const Index = () => {
       const json = editor.getJSON()
       // You can save the content to local storage or send it to a server here
       console.log(json)
+    },
+  });
+
+  const BlockHandle = Node.create({
+    name: 'blockHandle',
+    group: 'block',
+    content: 'inline*',
+    parseHTML() {
+      return [{ tag: 'div.block-handle' }];
+    },
+    renderHTML({ HTMLAttributes }) {
+      return ['div', { class: 'block-handle' }, 0];
+    },
+  });
+
+  const CustomParagraph = Node.create({
+    name: 'customParagraph',
+    group: 'block',
+    content: 'inline*',
+    parseHTML() {
+      return [{ tag: 'p' }];
+    },
+    renderHTML({ HTMLAttributes }) {
+      return ['div', { class: 'flex items-start' },
+        ['div', { class: 'mr-2 mt-1 cursor-move' }, ['span', { class: 'block-handle' }, '']],
+        ['p', HTMLAttributes, 0]
+      ];
     },
   });
 
@@ -153,6 +185,22 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gray-100 p-8 flex flex-col">
       <div className="max-w-4xl w-full mx-auto bg-white rounded-lg shadow-lg p-6 flex flex-col flex-grow">
+        <style jsx>{`
+          .block-handle {
+            width: 24px;
+            height: 24px;
+            background-color: #e2e8f0;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.2s;
+          }
+          .ProseMirror:hover .block-handle {
+            opacity: 1;
+          }
+        `}</style>
         <Input
           type="text"
           value={title}
