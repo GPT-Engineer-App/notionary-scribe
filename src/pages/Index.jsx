@@ -189,30 +189,28 @@ const Index = () => {
               style={{ top: menuPosition.top + 20, left: menuPosition.left }}
             >
               <div className="grid grid-cols-2 gap-2">
-                <Button variant="ghost" className="justify-start" onClick={() => insertBlock('h1')}>
-                  <span className="font-bold mr-2">H1</span> Heading 1
-                </Button>
-                <Button variant="ghost" className="justify-start" onClick={() => insertBlock('h2')}>
-                  <span className="font-bold mr-2">H2</span> Heading 2
-                </Button>
-                <Button variant="ghost" className="justify-start" onClick={() => insertBlock('h3')}>
-                  <span className="font-bold mr-2">H3</span> Heading 3
-                </Button>
-                <Button variant="ghost" className="justify-start" onClick={() => insertBlock('bulletList')}>
-                  <List className="h-4 w-4 mr-2" /> Bullet List
-                </Button>
-                <Button variant="ghost" className="justify-start" onClick={() => insertBlock('orderedList')}>
-                  <ListOrdered className="h-4 w-4 mr-2" /> Numbered List
-                </Button>
-                <Button variant="ghost" className="justify-start" onClick={() => insertBlock('image')}>
-                  <ImageIcon className="h-4 w-4 mr-2" /> Image
-                </Button>
-                <Button variant="ghost" className="justify-start" onClick={() => insertBlock('codeBlock')}>
-                  <Code className="h-4 w-4 mr-2" /> Code Block
-                </Button>
-                <Button variant="ghost" className="justify-start" onClick={() => insertBlock('blockquote')}>
-                  <Quote className="h-4 w-4 mr-2" /> Blockquote
-                </Button>
+                {[
+                  { type: 'h1', icon: 'H1', label: 'Heading 1' },
+                  { type: 'h2', icon: 'H2', label: 'Heading 2' },
+                  { type: 'h3', icon: 'H3', label: 'Heading 3' },
+                  { type: 'bulletList', icon: <List className="h-4 w-4" />, label: 'Bullet List' },
+                  { type: 'orderedList', icon: <ListOrdered className="h-4 w-4" />, label: 'Numbered List' },
+                  { type: 'image', icon: <ImageIcon className="h-4 w-4" />, label: 'Image' },
+                  { type: 'codeBlock', icon: <Code className="h-4 w-4" />, label: 'Code Block' },
+                  { type: 'blockquote', icon: <Quote className="h-4 w-4" />, label: 'Blockquote' },
+                ].map(({ type, icon, label }) => (
+                  <Button
+                    key={type}
+                    variant="ghost"
+                    className="justify-start w-full"
+                    onClick={() => insertBlock(type)}
+                  >
+                    <div className="flex items-center w-full">
+                      <span className="mr-2">{icon}</span>
+                      <span>{label}</span>
+                    </div>
+                  </Button>
+                ))}
               </div>
             </div>
           )}
