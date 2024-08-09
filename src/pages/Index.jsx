@@ -1,13 +1,61 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Bold, Italic, List, ListOrdered } from 'lucide-react';
 
 const Index = () => {
+  const [title, setTitle] = useState('Untitled');
+  const [content, setContent] = useState('');
+  const editorRef = useRef(null);
+
+  useEffect(() => {
+    if (editorRef.current) {
+      editorRef.current.innerHTML = content;
+    }
+  }, []);
+
+  const handleFormat = (command) => {
+    document.execCommand(command, false, null);
+    editorRef.current.focus();
+  };
+
+  const handleContentChange = () => {
+    if (editorRef.current) {
+      setContent(editorRef.current.innerHTML);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 p-8">
       <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-6">
-        <h1 className="text-3xl font-bold mb-4">Simple Text Editor</h1>
-        <div className="w-full min-h-[300px] p-2 border rounded">
-          Start typing here...
+        <Input
+          type="text"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          className="text-3xl font-bold mb-4 border-none focus:outline-none"
+          placeholder="Untitled"
+        />
+        <div className="mb-4 flex space-x-2">
+          <Button variant="outline" size="icon" onClick={() => handleFormat('bold')}>
+            <Bold className="h-4 w-4" />
+          </Button>
+          <Button variant="outline" size="icon" onClick={() => handleFormat('italic')}>
+            <Italic className="h-4 w-4" />
+          </Button>
+          <Button variant="outline" size="icon" onClick={() => handleFormat('insertUnorderedList')}>
+            <List className="h-4 w-4" />
+          </Button>
+          <Button variant="outline" size="icon" onClick={() => handleFormat('insertOrderedList')}>
+            <ListOrdered className="h-4 w-4" />
+          </Button>
         </div>
+        <div
+          ref={editorRef}
+          className="w-full min-h-[300px] p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          contentEditable
+          onInput={handleContentChange}
+          placeholder="Start typing here..."
+        />
       </div>
     </div>
   );
