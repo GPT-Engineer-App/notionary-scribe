@@ -9,6 +9,33 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Bold, Italic, List, ListOrdered, Image as ImageIcon, Code, Quote } from 'lucide-react';
 
+const BlockHandle = Node.create({
+  name: 'blockHandle',
+  group: 'block',
+  content: 'inline*',
+  parseHTML() {
+    return [{ tag: 'div.block-handle' }];
+  },
+  renderHTML({ HTMLAttributes }) {
+    return ['div', { class: 'block-handle' }, 0];
+  },
+});
+
+const CustomParagraph = Node.create({
+  name: 'customParagraph',
+  group: 'block',
+  content: 'inline*',
+  parseHTML() {
+    return [{ tag: 'p' }];
+  },
+  renderHTML({ HTMLAttributes }) {
+    return ['div', { class: 'flex items-start' },
+      ['div', { class: 'mr-2 mt-1 cursor-move' }, ['span', { class: 'block-handle' }, '']],
+      ['p', HTMLAttributes, 0]
+    ];
+  },
+});
+
 const Index = () => {
   const [title, setTitle] = useState('Untitled');
 
@@ -45,33 +72,6 @@ const Index = () => {
       const json = editor.getJSON()
       // You can save the content to local storage or send it to a server here
       console.log(json)
-    },
-  });
-
-  const BlockHandle = Node.create({
-    name: 'blockHandle',
-    group: 'block',
-    content: 'inline*',
-    parseHTML() {
-      return [{ tag: 'div.block-handle' }];
-    },
-    renderHTML({ HTMLAttributes }) {
-      return ['div', { class: 'block-handle' }, 0];
-    },
-  });
-
-  const CustomParagraph = Node.create({
-    name: 'customParagraph',
-    group: 'block',
-    content: 'inline*',
-    parseHTML() {
-      return [{ tag: 'p' }];
-    },
-    renderHTML({ HTMLAttributes }) {
-      return ['div', { class: 'flex items-start' },
-        ['div', { class: 'mr-2 mt-1 cursor-move' }, ['span', { class: 'block-handle' }, '']],
-        ['p', HTMLAttributes, 0]
-      ];
     },
   });
 
