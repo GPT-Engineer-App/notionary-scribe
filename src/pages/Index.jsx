@@ -26,12 +26,12 @@ const CustomParagraph = Node.create({
   group: 'block',
   content: 'inline*',
   parseHTML() {
-    return [{ tag: 'p' }];
+    return [{ tag: 'p.custom-paragraph' }];
   },
   renderHTML({ HTMLAttributes }) {
     return ['div', { class: 'flex items-start' },
       ['div', { class: 'mr-2 mt-1 cursor-move' }, ['span', { class: 'block-handle' }, '']],
-      ['p', HTMLAttributes, 0]
+      ['p', { ...HTMLAttributes, class: 'custom-paragraph' }, 0]
     ];
   },
 });
@@ -48,7 +48,6 @@ const Index = () => {
         heading: {
           levels: [1, 2, 3],
         },
-        paragraph: false,
       }),
       Placeholder.configure({
         placeholder: ({ node }) => {
@@ -60,7 +59,11 @@ const Index = () => {
       }),
       Image,
       BlockHandle,
-      CustomParagraph,
+      CustomParagraph.configure({
+        HTMLAttributes: {
+          class: 'custom-paragraph',
+        },
+      }),
     ],
     content: '',
     editorProps: {
