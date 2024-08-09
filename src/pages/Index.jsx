@@ -45,17 +45,30 @@ const Index = () => {
 
   useEffect(() => {
     if (editor) {
-      editor.on('keyup', ({ event }) => {
+      const handleKeyDown = ({ event }) => {
         if (event.key === '/') {
+          event.preventDefault();
           const { top, left } = editor.view.coordsAtPos(editor.state.selection.from);
           setMenuPosition({ top, left });
           setShowMenu(true);
-        } else {
+        }
+      };
+
+      const handleKeyUp = ({ event }) => {
+        if (event.key !== '/' && showMenu) {
           setShowMenu(false);
         }
-      });
+      };
+
+      editor.on('keydown', handleKeyDown);
+      editor.on('keyup', handleKeyUp);
+
+      return () => {
+        editor.off('keydown', handleKeyDown);
+        editor.off('keyup', handleKeyUp);
+      };
     }
-  }, [editor]);
+  }, [editor, showMenu]);
 
   const insertBlock = (type) => {
     if (editor) {
@@ -172,17 +185,35 @@ const Index = () => {
           />
           {showMenu && (
             <div
-              className="absolute bg-white shadow-lg rounded-lg p-2 z-10"
+              className="absolute bg-white shadow-lg rounded-lg p-2 z-10 border border-gray-200"
               style={{ top: menuPosition.top + 20, left: menuPosition.left }}
             >
-              <Button variant="ghost" onClick={() => insertBlock('h1')}>Heading 1</Button>
-              <Button variant="ghost" onClick={() => insertBlock('h2')}>Heading 2</Button>
-              <Button variant="ghost" onClick={() => insertBlock('h3')}>Heading 3</Button>
-              <Button variant="ghost" onClick={() => insertBlock('bulletList')}>Bullet List</Button>
-              <Button variant="ghost" onClick={() => insertBlock('orderedList')}>Numbered List</Button>
-              <Button variant="ghost" onClick={() => insertBlock('image')}>Image</Button>
-              <Button variant="ghost" onClick={() => insertBlock('codeBlock')}>Code Block</Button>
-              <Button variant="ghost" onClick={() => insertBlock('blockquote')}>Blockquote</Button>
+              <div className="grid grid-cols-2 gap-2">
+                <Button variant="ghost" className="justify-start" onClick={() => insertBlock('h1')}>
+                  <span className="font-bold mr-2">H1</span> Heading 1
+                </Button>
+                <Button variant="ghost" className="justify-start" onClick={() => insertBlock('h2')}>
+                  <span className="font-bold mr-2">H2</span> Heading 2
+                </Button>
+                <Button variant="ghost" className="justify-start" onClick={() => insertBlock('h3')}>
+                  <span className="font-bold mr-2">H3</span> Heading 3
+                </Button>
+                <Button variant="ghost" className="justify-start" onClick={() => insertBlock('bulletList')}>
+                  <List className="h-4 w-4 mr-2" /> Bullet List
+                </Button>
+                <Button variant="ghost" className="justify-start" onClick={() => insertBlock('orderedList')}>
+                  <ListOrdered className="h-4 w-4 mr-2" /> Numbered List
+                </Button>
+                <Button variant="ghost" className="justify-start" onClick={() => insertBlock('image')}>
+                  <ImageIcon className="h-4 w-4 mr-2" /> Image
+                </Button>
+                <Button variant="ghost" className="justify-start" onClick={() => insertBlock('codeBlock')}>
+                  <Code className="h-4 w-4 mr-2" /> Code Block
+                </Button>
+                <Button variant="ghost" className="justify-start" onClick={() => insertBlock('blockquote')}>
+                  <Quote className="h-4 w-4 mr-2" /> Blockquote
+                </Button>
+              </div>
             </div>
           )}
         </div>
