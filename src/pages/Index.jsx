@@ -1,11 +1,50 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import React, { useState } from 'react';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Bold, Italic, List, ListOrdered } from 'lucide-react';
 
 const Index = () => {
+  const [title, setTitle] = useState('Untitled');
+  const [content, setContent] = useState('');
+
+  const handleFormat = (command) => {
+    document.execCommand(command, false, null);
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-gray-600">Start building your amazing project here!</p>
+    <div className="min-h-screen bg-gray-100 p-8">
+      <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-6">
+        <Input
+          type="text"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          className="text-3xl font-bold mb-4 border-none focus:outline-none"
+          placeholder="Untitled"
+        />
+        <div className="mb-4 flex space-x-2">
+          <Button variant="outline" size="icon" onClick={() => handleFormat('bold')}>
+            <Bold className="h-4 w-4" />
+          </Button>
+          <Button variant="outline" size="icon" onClick={() => handleFormat('italic')}>
+            <Italic className="h-4 w-4" />
+          </Button>
+          <Button variant="outline" size="icon" onClick={() => handleFormat('insertUnorderedList')}>
+            <List className="h-4 w-4" />
+          </Button>
+          <Button variant="outline" size="icon" onClick={() => handleFormat('insertOrderedList')}>
+            <ListOrdered className="h-4 w-4" />
+          </Button>
+        </div>
+        <Textarea
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          className="w-full min-h-[300px] p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="Start typing here..."
+          contentEditable
+          onInput={(e) => setContent(e.target.innerHTML)}
+          dangerouslySetInnerHTML={{ __html: content }}
+        />
       </div>
     </div>
   );
