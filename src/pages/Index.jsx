@@ -177,10 +177,10 @@ const Index = () => {
             <ImageIcon className="h-4 w-4" />
           </Button>
         </div>
-        <div className="relative">
+        <div className="relative border rounded-md">
           <EditorContent
             editor={editor}
-            className="w-full min-h-[300px] p-2 focus:outline-none"
+            className="w-full min-h-[400px] p-4 focus:outline-none"
             onPaste={handlePaste}
           />
           {showMenu && (
