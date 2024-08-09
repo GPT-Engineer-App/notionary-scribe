@@ -1,14 +1,17 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
 import Image from '@tiptap/extension-image';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Bold, Italic, List, ListOrdered, Image as ImageIcon } from 'lucide-react';
+import { Bold, Italic, List, ListOrdered, Image as ImageIcon, Code, Quote } from 'lucide-react';
 
 const Index = () => {
   const [title, setTitle] = useState('Untitled');
+
+  const [showMenu, setShowMenu] = useState(false);
+  const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
 
   const editor = useEditor({
     extensions: [
@@ -39,6 +42,54 @@ const Index = () => {
       console.log(json)
     },
   });
+
+  useEffect(() => {
+    if (editor) {
+      editor.on('keyup', ({ event }) => {
+        if (event.key === '/') {
+          const { top, left } = editor.view.coordsAtPos(editor.state.selection.from);
+          setMenuPosition({ top, left });
+          setShowMenu(true);
+        } else {
+          setShowMenu(false);
+        }
+      });
+    }
+  }, [editor]);
+
+  const insertBlock = (type) => {
+    if (editor) {
+      switch (type) {
+        case 'h1':
+          editor.chain().focus().toggleHeading({ level: 1 }).run();
+          break;
+        case 'h2':
+          editor.chain().focus().toggleHeading({ level: 2 }).run();
+          break;
+        case 'h3':
+          editor.chain().focus().toggleHeading({ level: 3 }).run();
+          break;
+        case 'bulletList':
+          editor.chain().focus().toggleBulletList().run();
+          break;
+        case 'orderedList':
+          editor.chain().focus().toggleOrderedList().run();
+          break;
+        case 'image':
+          addImage();
+          break;
+        case 'codeBlock':
+          editor.chain().focus().toggleCodeBlock().run();
+          break;
+        case 'blockquote':
+          editor.chain().focus().toggleBlockquote().run();
+          break;
+        default:
+          break;
+      }
+      setShowMenu(false);
+    }
+  };
 
   const addImage = useCallback(() => {
     const url = window.prompt('Enter the URL of the image:')
@@ -113,11 +164,28 @@ const Index = () => {
             <ImageIcon className="h-4 w-4" />
           </Button>
         </div>
-        <EditorContent
-          editor={editor}
-          className="w-full min-h-[300px] p-2 focus:outline-none"
-          onPaste={handlePaste}
-        />
+        <div className="relative">
+          <EditorContent
+            editor={editor}
+            className="w-full min-h-[300px] p-2 focus:outline-none"
+            onPaste={handlePaste}
+          />
+          {showMenu && (
+            <div
+              className="absolute bg-white shadow-lg rounded-lg p-2 z-10"
+              style={{ top: menuPosition.top + 20, left: menuPosition.left }}
+            >
+              <Button variant="ghost" onClick={() => insertBlock('h1')}>Heading 1</Button>
+              <Button variant="ghost" onClick={() => insertBlock('h2')}>Heading 2</Button>
+              <Button variant="ghost" onClick={() => insertBlock('h3')}>Heading 3</Button>
+              <Button variant="ghost" onClick={() => insertBlock('bulletList')}>Bullet List</Button>
+              <Button variant="ghost" onClick={() => insertBlock('orderedList')}>Numbered List</Button>
+              <Button variant="ghost" onClick={() => insertBlock('image')}>Image</Button>
+              <Button variant="ghost" onClick={() => insertBlock('codeBlock')}>Code Block</Button>
+              <Button variant="ghost" onClick={() => insertBlock('blockquote')}>Blockquote</Button>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
