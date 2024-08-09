@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Bold, Italic, List, ListOrdered } from 'lucide-react';
@@ -6,9 +6,23 @@ import { Bold, Italic, List, ListOrdered } from 'lucide-react';
 const Index = () => {
   const [title, setTitle] = useState('Untitled');
   const [content, setContent] = useState('');
+  const editorRef = useRef(null);
+
+  useEffect(() => {
+    if (editorRef.current) {
+      editorRef.current.innerHTML = content;
+    }
+  }, []);
 
   const handleFormat = (command) => {
     document.execCommand(command, false, null);
+    editorRef.current.focus();
+  };
+
+  const handleContentChange = () => {
+    if (editorRef.current) {
+      setContent(editorRef.current.innerHTML);
+    }
   };
 
   return (
@@ -36,10 +50,10 @@ const Index = () => {
           </Button>
         </div>
         <div
+          ref={editorRef}
           className="w-full min-h-[300px] p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
           contentEditable
-          onInput={(e) => setContent(e.target.innerHTML)}
-          dangerouslySetInnerHTML={{ __html: content }}
+          onInput={handleContentChange}
           placeholder="Start typing here..."
         />
       </div>
