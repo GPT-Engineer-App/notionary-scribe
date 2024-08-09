@@ -1,27 +1,38 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useEditor, EditorContent } from '@tiptap/react';
+import StarterKit from '@tiptap/starter-kit';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Bold, Italic, List, ListOrdered } from 'lucide-react';
 
 const Index = () => {
   const [title, setTitle] = useState('Untitled');
-  const [content, setContent] = useState('');
-  const editorRef = useRef(null);
 
-  useEffect(() => {
-    if (editorRef.current) {
-      editorRef.current.innerHTML = content;
-    }
-  }, []);
+  const editor = useEditor({
+    extensions: [
+      StarterKit,
+    ],
+    content: '',
+  });
 
   const handleFormat = (command) => {
-    document.execCommand(command, false, null);
-    editorRef.current.focus();
-  };
-
-  const handleContentChange = () => {
-    if (editorRef.current) {
-      setContent(editorRef.current.innerHTML);
+    if (editor) {
+      switch (command) {
+        case 'bold':
+          editor.chain().focus().toggleBold().run();
+          break;
+        case 'italic':
+          editor.chain().focus().toggleItalic().run();
+          break;
+        case 'bulletList':
+          editor.chain().focus().toggleBulletList().run();
+          break;
+        case 'orderedList':
+          editor.chain().focus().toggleOrderedList().run();
+          break;
+        default:
+          break;
+      }
     }
   };
 
@@ -42,19 +53,16 @@ const Index = () => {
           <Button variant="outline" size="icon" onClick={() => handleFormat('italic')}>
             <Italic className="h-4 w-4" />
           </Button>
-          <Button variant="outline" size="icon" onClick={() => handleFormat('insertUnorderedList')}>
+          <Button variant="outline" size="icon" onClick={() => handleFormat('bulletList')}>
             <List className="h-4 w-4" />
           </Button>
-          <Button variant="outline" size="icon" onClick={() => handleFormat('insertOrderedList')}>
+          <Button variant="outline" size="icon" onClick={() => handleFormat('orderedList')}>
             <ListOrdered className="h-4 w-4" />
           </Button>
         </div>
-        <div
-          ref={editorRef}
+        <EditorContent
+          editor={editor}
           className="w-full min-h-[300px] p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-          contentEditable
-          onInput={handleContentChange}
-          placeholder="Start typing here..."
         />
       </div>
     </div>
