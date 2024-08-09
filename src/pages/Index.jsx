@@ -151,8 +151,8 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
-      <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-6">
+    <div className="min-h-screen bg-gray-100 p-8 flex flex-col">
+      <div className="max-w-4xl w-full mx-auto bg-white rounded-lg shadow-lg p-6 flex flex-col flex-grow">
         <Input
           type="text"
           value={title}
@@ -177,10 +177,10 @@ const Index = () => {
             <ImageIcon className="h-4 w-4" />
           </Button>
         </div>
-        <div className="relative border rounded-md h-[calc(100vh-300px)] flex flex-col overflow-hidden">
+        <div className="relative border rounded-md flex-grow flex flex-col overflow-hidden">
           <EditorContent
             editor={editor}
-            className="w-full h-full overflow-y-auto p-4"
+            className="w-full flex-grow overflow-y-auto p-4"
             onPaste={handlePaste}
           />
           {showMenu && (
